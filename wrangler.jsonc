@@ -1,0 +1,31 @@
+{
+  // CommonGround — Cloudflare Worker (Next.js via OpenNext) + D1 + R2.
+  // Before the first deploy: `npx wrangler d1 create commonground` and paste the id below,
+  // `npx wrangler r2 bucket create commonground-media`. See docs/DEPLOYMENT.md.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "commonground",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "services": [
+    { "binding": "WORKER_SELF_REFERENCE", "service": "commonground" },
+    { "binding": "REALTIME", "service": "commonground-realtime" }
+  ],
+  "observability": { "enabled": true },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "commonground",
+      "database_id": "e4c097df-ce14-4ef1-9e1f-3e732efcfe89",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  // R2 (image uploads) is optional. To enable: `npx wrangler r2 bucket create commonground-media` and add:
+  // "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "commonground-media" }],
+  "vars": {
+    "ENVIRONMENT": "production",
+    "APP_URL": "https://commonground.commonground-app.workers.dev",
+    "REALTIME_URL": "https://commonground-realtime.commonground-app.workers.dev"
+  }
+}
