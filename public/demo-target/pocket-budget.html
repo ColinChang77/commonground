@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pocket Budget (demo target)</title>
+<style>
+  :root { --btn: 30px; --font: 13px; }
+  body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #f6f5f1; color: #24211c; }
+  .tag { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background: #24211c; color: #fff; font-weight: 700; font-size: 15px; padding: 6px 14px; border-radius: 999px; z-index: 5; }
+  header { padding: 56px 20px 8px; } h1 { margin: 0; font-size: 22px; } .sub { color: #7a736a; font-size: 14px; }
+  .total { margin: 14px 20px; background: #fff; border-radius: 16px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .total b { font-size: 30px; display: block; }
+  ul { list-style: none; margin: 0 20px; padding: 0; } li { display: flex; justify-content: space-between; background: #fff; margin-bottom: 8px; padding: 14px; border-radius: 12px; font-size: 15px; }
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; padding: 16px 20px 28px; background: linear-gradient(transparent, #f6f5f1 35%); display: flex; justify-content: flex-end; }
+  button { height: var(--btn); font-size: var(--font); padding: 0 12px; border: 0; border-radius: 999px; background: #2f7a4f; color: #fff; font-weight: 700; transition: transform .15s; }
+  body.after .bar, body.after2 .bar { justify-content: stretch; } body.after button, body.after2 button { width: 100%; }
+  body.after { --btn: 48px; --font: 17px; } body.after2 { --btn: 60px; --font: 20px; }
+  .tap { position: fixed; width: 44px; height: 44px; border-radius: 50%; background: rgba(47,122,79,.35); border: 3px solid #2f7a4f; pointer-events: none; transform: translate(-50%,-50%); opacity: 0; transition: opacity .2s; z-index: 6; }
+  .miss { background: rgba(200,60,40,.3); border-color: #c83c28; }
+</style></head>
+<body>
+<div class="tag" id="tag">Before</div>
+<header><h1>Pocket Budget</h1><div class="sub">This week · demo target page</div></header>
+<div class="total">Spent this week<b>$84.20</b></div>
+<ul><li><span>☕ Coffee</span><span>$4.50</span></li><li><span>🍜 Lunch</span><span>$11.80</span></li><li><span>🚌 Bus pass</span><span>$25.00</span></li><li><span>📚 Notebook</span><span>$6.90</span></li><li><span>🍎 Groceries</span><span>$36.00</span></li></ul>
+<div class="bar"><button id="add">+ Add expense</button></div>
+<div class="tap" id="tap"></div>
+<script>
+  const v = new URLSearchParams(location.search).get("v") || "before";
+  document.body.className = v;
+  document.getElementById("tag").textContent = v === "before" ? "Before" : v === "after" ? "After · round 1" : "After · round 2";
+  // Simulated thumb tap on a phone: lands where a thumb naturally hits, then reports hit or miss.
+  window.thumbTap = (x, y) => {
+    const t = document.getElementById("tap"), b = document.getElementById("add").getBoundingClientRect();
+    const hit = x >= b.left && x <= b.right && y >= b.top && y <= b.bottom;
+    t.style.left = x + "px"; t.style.top = y + "px"; t.className = "tap" + (hit ? "" : " miss"); t.style.opacity = 1;
+    if (hit) document.getElementById("add").style.transform = "scale(.96)";
+    setTimeout(() => { t.style.opacity = 0; document.getElementById("add").style.transform = ""; }, 700);
+    return hit;
+  };
+</script>
+</body></html>

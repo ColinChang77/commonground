@@ -44,7 +44,7 @@ export default async function DiscussionPage({ params }: { params: Promise<{ id:
   const evRows = showcase && sugRows.length ? await listEvents(db, d.id) : [];
   const contributors = showcase ? await showcaseContributors(db, d.id) : [];
   const suggestions: Record<string, SuggestionView> = {};
-  for (const s of sugRows) suggestions[s.commentId] = { id: s.id, authorId: s.authorId, title: s.title, restated: s.restated, question: s.question, status: s.status, preview: s.preview, prNumber: s.prNumber, risk: s.risk, events: evRows.filter((e) => e.suggestionId === s.id).map((e) => ({ id: e.id, actor: e.actor, message: e.message })) };
+  for (const s of sugRows) suggestions[s.commentId] = { id: s.id, authorId: s.authorId, title: s.title, restated: s.restated, question: s.question, status: s.status, preview: s.preview, prNumber: s.prNumber, risk: s.risk, quality: s.quality, reason: s.reason, aiReply: s.aiReply, previewVideoUrl: s.previewVideoUrl, round: s.round, events: evRows.filter((e) => e.suggestionId === s.id).map((e) => ({ id: e.id, actor: e.actor, message: e.message })) };
   const isBuilder = Boolean(showcase && viewer?.id === showcase.builderId);
 
   return (
@@ -78,6 +78,7 @@ export default async function DiscussionPage({ params }: { params: Promise<{ id:
                 <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">{COPY.showcase}</span>
                 <span className="inline-flex items-center gap-1 font-mono text-xs"><GitBranch className="size-3.5" aria-hidden /> {showcase.repoFullName}</span>
                 {showcase.demoUrl && <a href={showcase.demoUrl} target="_blank" rel="noopener noreferrer nofollow" className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"><Globe className="size-3.5" aria-hidden /> Live demo</a>}
+                {isBuilder && <Link href={`/d/${d.id}/suggestions`} data-testid="inbox-link" className="rounded-full border border-primary/40 px-2 py-0.5 text-xs font-semibold text-primary hover:bg-accent">Suggestions inbox →</Link>}
                 {showcase.demoMode ? <span className="ml-auto rounded-full border border-dashed px-2 py-0.5 text-[0.7rem] text-muted-foreground">{COPY.demoBadge}</span> : null}
               </div>
               <p className="text-xs text-muted-foreground">Comment in plain words — an AI helper turns useful feedback into a change for the maker to approve. {showcase.demoMode ? COPY.demoExplainer : ""}</p>

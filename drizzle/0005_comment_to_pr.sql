@@ -24,9 +24,15 @@ CREATE TABLE `suggestions` (
   `preview` text,
   `pr_number` integer,
   `triage_source` text NOT NULL,
+  `quality` text NOT NULL DEFAULT 'actionable',
+  `reason` text NOT NULL DEFAULT '',
+  `ai_reply` text,
+  `preview_video_url` text,
+  `round` integer NOT NULL DEFAULT 1,
+  `feedback` text,
   `created_at` integer NOT NULL DEFAULT (unixepoch() * 1000),
   `updated_at` integer NOT NULL DEFAULT (unixepoch() * 1000),
-  CONSTRAINT `suggestions_status_ck` CHECK(`status` in ('confirming','queued','running','reviewing','preview_ready','sent','pr_opened','merged','declined','builder_review'))
+  CONSTRAINT `suggestions_status_ck` CHECK(`status` in ('confirming','queued','running','reviewing','preview_recorded','sent','pr_opened','merged','declined','builder_review','filtered'))
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `suggestions_comment_uq` ON `suggestions` (`comment_id`);
