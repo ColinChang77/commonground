@@ -1,6 +1,6 @@
 # Launch readiness — 2026-11-11
 
-**Verdict: NOT launch-ready.** Deployed as a private beta at https://commonground.commonground-app.workers.dev (Cloudflare account "Commonground", D1 `commonground` in APAC). Sign-up is locked until an email provider is configured; R2 (image uploads) not enabled.
+**Verdict: NOT launch-ready.** Deployed as a private beta at https://commonground.commonground-app.workers.dev (Cloudflare account "Commonground", D1 `commonground` in APAC). Sign-up is open via **Google sign-in** (since 2026-11-11, Google Cloud project `commonground-514413`, OAuth app published to production). Email + password sign-up stays locked until an email provider is configured; R2 (image uploads) not enabled.
 
 Live checks 2026-11-11: 16 public/auth routes return the expected 200/307/404, MCP without token 401, webhook 503 (GitHub not configured), sign-up API refused (400) with private-beta page, security headers present, remote DB reachable.
 
@@ -52,7 +52,7 @@ E2E journey covered (real UI, two browser users): sign-up with email verificatio
 1. **R2**: enable in the Cloudflare dashboard, `npx wrangler r2 bucket create commonground-media`, uncomment `r2_buckets` in wrangler.jsonc, redeploy. Workers Paid recommended (bundle is at 2.85/3 MB free limit).
 2. **Email provider**: `RESEND_API_KEY` + verified sender domain (`EMAIL_FROM`). Production sign-up fails without it (by design).
 3. **GitHub App**: create per docs/GITHUB_APP.md and set the 6 `GITHUB_*` secrets; then live-test install → link → issue → approved PR → webhook.
-4. **OAuth (optional)**: Google client id/secret.
+4. **OAuth**: ✅ Google configured (redirect `…/api/auth/callback/google`). GitHub sign-in optional.
 5. **Hosted agents (optional for launch)**: an isolated execution backend; until then the UI states hosted runs are unavailable.
 6. **Legal review** of Terms / Privacy / Community Guidelines; real contact details.
 7. **Hardening**: CSP, WAF rate limits, Turnstile on sign-up, error tracking (Sentry), off-platform D1 export schedule.

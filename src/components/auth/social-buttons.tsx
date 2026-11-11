@@ -21,7 +21,17 @@ function GoogleIcon() {
   );
 }
 
-export function SocialButtons({ google, github, callbackURL }: { google: boolean; github: boolean; callbackURL: string }) {
+export function SocialButtons({
+  google,
+  github,
+  callbackURL,
+  divider = true,
+}: {
+  google: boolean;
+  github: boolean;
+  callbackURL: string;
+  divider?: boolean;
+}) {
   const [pending, setPending] = useState<string | null>(null);
   if (!google && !github) return null;
   const go = async (provider: "google" | "github") => {
@@ -41,9 +51,11 @@ export function SocialButtons({ google, github, callbackURL }: { google: boolean
           <GitHubIcon /> Continue with GitHub
         </Button>
       )}
-      <div className="my-2 flex items-center gap-3 text-xs text-muted-foreground">
-        <span className="h-px flex-1 bg-border" /> or with email <span className="h-px flex-1 bg-border" />
-      </div>
+      {divider && (
+        <div className="my-2 flex items-center gap-3 text-xs text-muted-foreground">
+          <span className="h-px flex-1 bg-border" /> or with email <span className="h-px flex-1 bg-border" />
+        </div>
+      )}
     </div>
   );
 }
