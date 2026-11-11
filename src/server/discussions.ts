@@ -17,6 +17,7 @@ import { isStaff } from "@/lib/session";
 import { assertNotBlocked, assertOwnMedia, canSeeDiscussion } from "@/server/guards";
 import { CATEGORIES, REACTIONS, type ReactionKind } from "@/lib/constants";
 import { looksLikeSpam } from "@/lib/spam";
+import { getShowcase, triageComment } from "@/lib/suggestions";
 
 export async function createDiscussion(raw: unknown): Promise<ActionResult<{ id: string }>> {
   return run(async () => {
@@ -128,6 +129,9 @@ export async function addComment(raw: unknown): Promise<ActionResult<{ id: strin
       items.push({ userId: d.authorId, actorId: v.id, type: "comment", title: `${v.profile.displayName} commented on “${d.title}”`, body: excerpt(input.body, 140), url, projectId: d.projectId });
     await notify(db, items);
     await notifyMentions(v, input.body, url, d.title, [d.authorId, parentAuthor ?? ""]);
+    // Showcase threads: an AI triage step turns plain-language feedback into a change request card.
+    const showcase = await getShowcase(db, d.id);
+    if (showcase) await triageComment(db, showcase, { id, authorId: v.id, body: input.body });
     await publish(`d:${d.id}`, { kind: "comment", discussionId: d.id, commentId: id });
     const projectId = d.projectId ?? d.convertedProjectId;
     if (projectId) {

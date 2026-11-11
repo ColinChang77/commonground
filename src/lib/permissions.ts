@@ -61,3 +61,20 @@ export function canAssignRole(actor: ProjectRole | null, target: ProjectRole, cu
 }
 
 export const ROLE_RANK: Record<ProjectRole, number> = { owner: 4, admin: 3, contributor: 2, viewer: 1 };
+
+/* ---------------- Showcase threads (comment → change request) ---------------- */
+
+/** Only the builder who owns a showcase post decides on change requests (adopt, decline, mark merged, rules). */
+export function canDecideSuggestion(viewerId: string | null, builderId: string): boolean {
+  return Boolean(viewerId) && viewerId === builderId;
+}
+
+/** Only the person who wrote the comment confirms the restated change request ("Yes, that's what I meant"). */
+export function canConfirmSuggestion(viewerId: string | null, suggestionAuthorId: string): boolean {
+  return Boolean(viewerId) && viewerId === suggestionAuthorId;
+}
+
+/** Points never go to the builder for their own showcase (no self-awarding). */
+export function earnsPoints(recipientId: string, builderId: string): boolean {
+  return recipientId !== builderId;
+}

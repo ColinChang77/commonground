@@ -1,5 +1,15 @@
 # CommonGround
 
+### What we built tonight (c0mpiled-18, YC Startup School Hackathon Taipei)
+- Showcase posts: a builder shares a project with its GitHub repo in a thread-style feed.
+- Comment → change request: a non-technical viewer comments in plain language; an agent restates it and the viewer confirms with one tap.
+- One live thread for everyone: viewers, the builder and the agents see each step as it happens.
+- Builder approval → pull request, and contribution points for the person whose comment started it.
+- Demo mode: GitHub and the cloud sandbox are replaced by labelled test doubles in this build.
+
+Run the demo locally: `npm run db:migrate:local`, start the realtime worker (`cd realtime && npx wrangler dev --port 8790`, with the same `REALTIME_SECRET` in `realtime/.dev.vars` and `.dev.vars`), `npm run dev`, then record with `npx playwright test -c playwright.capture.config.ts demo-90s` (uses the system Chrome). Code: `src/lib/suggestions.ts`, `src/server/suggestions.ts`, `src/components/showcase/`, `drizzle/0005_comment_to_pr.sql`.
+
+
 **From conversations to collaborations.** A social platform where people share ideas, turn discussions into projects, recruit collaborators, track verified contributions — and, for software projects, work with AI coding agents through GitHub and MCP.
 
 > Status: **not yet launch-ready.** Core product works end-to-end locally and in the Cloudflare Workers runtime; cloud resources, email, GitHub App credentials and legal review are outstanding. See [docs/LAUNCH_READINESS.md](docs/LAUNCH_READINESS.md).

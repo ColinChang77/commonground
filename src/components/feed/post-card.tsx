@@ -38,6 +38,7 @@ export function PostCard({ post, viewerId, hideCommunity = false }: { post: Feed
           <TimeAgo date={post.createdAt} />
           {post.authorIsDemo ? <SampleBadge /> : null}
           <KindBadge kind={post.kind} />
+          {post.showcaseRepo && <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[0.7rem] font-semibold text-primary-foreground">Showcase · <span className="font-mono">{post.showcaseRepo}</span></span>}
           {post.projectSlug && post.kind === "update" && <Link href={`/p/${post.projectSlug}`} className="relative z-10 font-semibold text-primary hover:underline">{post.projectTitle}</Link>}
         </header>
         <div className="mt-1 flex gap-3">

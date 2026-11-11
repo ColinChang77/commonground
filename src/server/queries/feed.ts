@@ -45,6 +45,7 @@ export type FeedPost = {
   convertedTitle: string | null;
   myReactions: string | null;
   bookmarked: number;
+  showcaseRepo?: string | null;
 };
 
 export type FeedProject = {
@@ -137,7 +138,8 @@ export async function getFeed(opts: { tab: FeedTab; viewerId: string | null; cat
            (SELECT count(DISTINCT c3.author_id) FROM comments c3 WHERE c3.discussion_id = d.id AND c3.status = 'published' AND c3.author_id != d.author_id) AS participants,
            (SELECT group_concat(n, '|') FROM (SELECT DISTINCT p3.display_name AS n FROM comments c4 JOIN profiles p3 ON p3.user_id = c4.author_id WHERE c4.discussion_id = d.id AND c4.status = 'published' AND c4.author_id != d.author_id ORDER BY c4.created_at DESC LIMIT 3)) AS participantNames,
            (SELECT count(*) FROM reactions r2 WHERE r2.target_type = 'discussion' AND r2.target_id = d.id AND r2.kind = 'helping') AS helpers,
-           EXISTS (SELECT 1 FROM bookmarks bk WHERE bk.discussion_id = d.id AND bk.user_id = ${viewer}) AS bookmarked
+           EXISTS (SELECT 1 FROM bookmarks bk WHERE bk.discussion_id = d.id AND bk.user_id = ${viewer}) AS bookmarked,
+           (SELECT sc.repo_full_name FROM showcases sc WHERE sc.discussion_id = d.id) AS showcaseRepo
     FROM discussions d
     JOIN profiles p ON p.user_id = d.author_id
     LEFT JOIN projects pj ON pj.id = d.project_id

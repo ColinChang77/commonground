@@ -14,6 +14,8 @@ import { TimeAgo } from "@/components/time-ago";
 import { Button } from "@/components/ui/button";
 import { ProfileActions } from "@/components/profile-ui";
 import { SampleBadge } from "@/components/sample-badge";
+import { pointsFor } from "@/lib/suggestions";
+import { COPY } from "@/lib/copy";
 
 type P = { userId: string; username: string; displayName: string; bio: string; avatarKey: string | null; collabPrefs: string; suspendedAt: number | null; isDemo: number; createdAt: number; followers: number; following: number; iFollow: number; blocked: number; blockedMe: number };
 
@@ -59,6 +61,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
     FROM discussions d LEFT JOIN projects cp ON cp.id = d.converted_project_id AND cp.visibility = 'public'
     WHERE d.author_id = ${p.userId} AND d.status = 'published' AND d.project_id IS NULL ORDER BY d.created_at DESC LIMIT 20`);
   const distinctProjects = new Set(contribs.map((c) => c.projectSlug)).size;
+  const pts = await pointsFor(db, p.userId);
 
   return (
     <div className="mx-auto grid max-w-[1040px] gap-8 px-4 py-5 md:px-8 md:py-8 lg:grid-cols-[minmax(0,1fr)_300px]">
@@ -74,6 +77,15 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
             <p className="mt-2 flex gap-4 text-sm text-muted-foreground"><span><strong className="text-foreground tabular-nums">{p.followers}</strong> followers</span><span><strong className="text-foreground tabular-nums">{p.following}</strong> following</span></p>
           </div>
         </header>
+        <section aria-labelledby="points-h" data-testid="points-section" className="mb-8 rounded-xl border border-primary/30 bg-accent/30 p-4">
+          <h2 id="points-h" className="text-base font-semibold">🏅 {COPY.points(pts.total)}</h2>
+          <p className="mb-2 text-xs text-muted-foreground">Earned when a maker adopts a suggestion. Points stay on CommonGround — not money, not transferable.</p>
+          {pts.items.length > 0 ? (
+            <ul className="flex flex-col gap-1.5">
+              {pts.items.map((it, i) => <li key={i} className="flex items-center justify-between gap-3 rounded-lg bg-background px-3 py-2 text-sm"><span className="min-w-0"><span className="font-medium">{it.title}</span><Link href={`/d/${it.discussionId}`} className="block truncate text-xs text-primary hover:underline">{it.discussionTitle}</Link></span><span className="shrink-0 text-xs font-semibold">+{it.points} · {it.reason === "adopted" ? "adopted" : it.reason === "merged" ? "live" : it.reason}</span></li>)}
+            </ul>
+          ) : <p className="text-sm text-muted-foreground">No adopted suggestions yet.</p>}
+        </section>
         <section aria-labelledby="contrib-h" className="mb-8">
           <h2 id="contrib-h" className="mb-1 text-base font-semibold">Verified contributions</h2>
           <p className="mb-3 text-sm text-muted-foreground">{contribs.length ? `${contribs.length} verified across ${distinctProjects} project${distinctProjects === 1 ? "" : "s"}.` : "No verified contributions yet."}</p>

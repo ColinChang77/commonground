@@ -47,3 +47,18 @@ export async function publish(room: string, event: RealtimeEvent) {
     /* outside a request context */
   }
 }
+
+/** Awaited broadcast with an explicit env (usable from `after()` background work). Never throws. */
+export async function publishWith(env: AppEnv, room: string, event: RealtimeEvent) {
+  try {
+    const key = secret("REALTIME_SECRET" as keyof AppEnv, env);
+    if (!key) return;
+    const init: RequestInit = { method: "POST", headers: { "content-type": "application/json", "x-realtime-secret": key }, body: JSON.stringify({ room, event }) };
+    const binding = (env as unknown as { REALTIME?: Fetcher }).REALTIME;
+    const base = realtimeUrl(env);
+    if (isProduction(env) && binding) await binding.fetch("https://realtime/publish", init);
+    else if (base) await fetch(`${base}/publish`, init);
+  } catch (e) {
+    console.warn("[realtime] publish failed", String(e));
+  }
+}
